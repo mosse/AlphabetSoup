@@ -1,8 +1,49 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Animated, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  TextInput, 
+  TouchableOpacity, 
+  Animated, 
+  SafeAreaView, 
+  KeyboardAvoidingView, 
+  Platform,
+  useColorScheme 
+} from 'react-native';
+
+// Define theme colors
+const lightTheme = {
+  background: '#F7F9FC',
+  text: '#333333',
+  secondaryText: '#888888',
+  letterBackground: 'white',
+  letterText: '#444444',
+  inputBackground: 'white',
+  inputText: '#333333',
+  inputPlaceholder: '#AAAAAA',
+  cardShadow: 'rgba(0,0,0,0.1)',
+  titleShadow: 'rgba(0,0,0,0.1)',
+};
+
+const darkTheme = {
+  background: '#121212',
+  text: '#F5F5F5',
+  secondaryText: '#BBBBBB',
+  letterBackground: '#333333',
+  letterText: '#F0F0F0',
+  inputBackground: '#333333',
+  inputText: '#F5F5F5',
+  inputPlaceholder: '#888888',
+  cardShadow: 'rgba(255,255,255,0.05)',
+  titleShadow: 'rgba(0,0,0,0.5)',
+};
 
 export default function App() {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+  
   const [text, setText] = useState('');
   const [letters, setLetters] = useState<string[]>([]);
   const [shuffled, setShuffled] = useState(false);
@@ -148,8 +189,8 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
+    <SafeAreaView style={[styles.container, {backgroundColor: theme.background}]}>
+      <StatusBar style={colorScheme === 'dark' ? "light" : "dark"} />
       
       <View style={styles.titleContainer}>
         <Text style={styles.emoji}>🔤🥣</Text>
@@ -161,6 +202,7 @@ export default function App() {
                 styles.titleLetter, 
                 { 
                   color: titleColors[index % titleColors.length],
+                  textShadowColor: theme.titleShadow,
                   transform: [
                     { rotate: `${Math.sin(index * 0.5) * 8}deg` },
                     { translateY: Math.sin(index) * 6 }
@@ -205,6 +247,8 @@ export default function App() {
                     style={[
                       styles.letter,
                       {
+                        backgroundColor: theme.letterBackground,
+                        shadowColor: theme.cardShadow,
                         transform: [
                           { translateX: animatedX },
                           { translateY: animatedY }
@@ -212,7 +256,9 @@ export default function App() {
                       }
                     ]}
                   >
-                    <Text style={styles.letterText}>{letters[letterIndex]}</Text>
+                    <Text style={[styles.letterText, {color: theme.letterText}]}>
+                      {letters[letterIndex]}
+                    </Text>
                   </Animated.View>
                 );
               })}
@@ -222,7 +268,9 @@ export default function App() {
         
         {letters.length === 0 && (
           <View style={styles.emptyStateContainer}>
-            <Text style={styles.emptyStateText}>Enter some letters below to get started!</Text>
+            <Text style={[styles.emptyStateText, {color: theme.secondaryText}]}>
+              Enter some letters below to get started!
+            </Text>
           </View>
         )}
       </View>
@@ -233,10 +281,18 @@ export default function App() {
       >
         <View style={styles.inputContainer}>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              {
+                backgroundColor: theme.inputBackground, 
+                color: theme.inputText,
+                shadowColor: theme.cardShadow
+              }
+            ]}
             value={text}
             onChangeText={setText}
             placeholder="Enter letters..."
+            placeholderTextColor={theme.inputPlaceholder}
             autoCapitalize="none"
             returnKeyType="go"
             onSubmitEditing={letters.length === 0 ? handleButtonPress : undefined}
@@ -270,7 +326,6 @@ const titleColors = [
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F9FC',
   },
   titleContainer: {
     alignItems: 'center',
@@ -289,7 +344,6 @@ const styles = StyleSheet.create({
   titleLetter: {
     fontSize: 28,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0,0,0,0.1)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
@@ -297,7 +351,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#333',
     display: 'none', // Hide the original title
   },
   mainContent: {
@@ -311,7 +364,6 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#888',
     textAlign: 'center',
   },
   circleContainer: {
@@ -329,13 +381,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 46,
     height: 46,
-    backgroundColor: 'white',
     borderRadius: 23,
     justifyContent: 'center',
     alignItems: 'center',
     left: 77, // Half of circle width minus half of letter width
     top: 77, // Half of circle height minus half of letter height
-    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -347,7 +397,6 @@ const styles = StyleSheet.create({
   letterText: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#444',
   },
   bottomControls: {
     width: '100%',
@@ -362,12 +411,10 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 56,
-    backgroundColor: 'white',
     borderRadius: 12,
     paddingHorizontal: 16,
     marginRight: 10,
     fontSize: 16,
-    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
