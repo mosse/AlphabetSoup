@@ -153,7 +153,25 @@ export default function App() {
       
       <View style={styles.titleContainer}>
         <Text style={styles.emoji}>🔤🥣</Text>
-        <Text style={styles.title}>Alphabet Soup</Text>
+        <View style={styles.titleTextContainer}>
+          {"Alphabet Soup".split('').map((letter, index) => (
+            <Text 
+              key={index} 
+              style={[
+                styles.titleLetter, 
+                { 
+                  color: titleColors[index % titleColors.length],
+                  transform: [
+                    { rotate: `${Math.sin(index * 0.5) * 8}deg` },
+                    { translateY: Math.sin(index) * 6 }
+                  ]
+                }
+              ]}
+            >
+              {letter}
+            </Text>
+          ))}
+        </View>
       </View>
       
       <View style={styles.mainContent}>
@@ -240,6 +258,15 @@ export default function App() {
   );
 }
 
+const titleColors = [
+  '#FF6B6B', // reddish
+  '#5A67F2', // blueish
+  '#21D07D', // greenish
+  '#FFC857', // yellowish
+  '#9857FF', // purplish
+  '#FF85C8', // pinkish
+];
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -254,11 +281,24 @@ const styles = StyleSheet.create({
     fontSize: 48,
     marginBottom: 10,
   },
+  titleTextContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  titleLetter: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#333',
+    display: 'none', // Hide the original title
   },
   mainContent: {
     flex: 1,
